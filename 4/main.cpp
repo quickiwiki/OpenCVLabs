@@ -21,7 +21,7 @@ class ImageWindow
         window->applyFilter(pos);
     };
 
-    static void onMouse(int event, int x, int y, int flags, void *userInput)
+    static void onMouse(int event, int x, int y, [[maybe_unused]] int flags, void *userInput)
     {
         if (event != cv::EVENT_LBUTTONDOWN)
             return;
@@ -125,7 +125,7 @@ int main(int argc, char **argv)
 
     for (int i = 0; const auto &window: windows)
     {
-        const auto offset = 20 * i++;
+        const auto offset = 100 * i++;
         window->move(offset, offset);
         window->show();
     }
