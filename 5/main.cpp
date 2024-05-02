@@ -131,7 +131,6 @@ public:
                     cv::cvtColor(result, result, cv::COLOR_BGR2GRAY);
                     break;
                 case FiltersType::RGB:
-                    image.copyTo(result);
                     break;
                 case FiltersType::Sobel:
                     cv::Sobel(result, result, CV_8U, 1, 1);
@@ -171,34 +170,23 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    if (!parser.check())
+    if (!parser.check() || argc < 2)
     {
         parser.printErrors();
         return 0;
     }
-
-    std::vector<ImageWindow::UniPtr> windows;
-
-    for (int i = 1; i < argc; ++i)
+    const std::filesystem::path filePath(argv[1]);
+    std::cout << filePath << std::endl;
+    auto image = cv::imread(filePath);
+    if (!image.data)
     {
-        const std::filesystem::path filePath(argv[i]);
-        std::cout << filePath << std::endl;
-        auto image = cv::imread(filePath);
-        if (!image.data)
-        {
-            std::cerr << filePath << " image dismissing!\n";
-            return -1;
-        }
-
-        windows.emplace_back(std::make_unique<ImageWindow>(filePath.filename(), image, cv::WINDOW_AUTOSIZE));
+        std::cerr << filePath << " image dismissing!\n";
+        return -1;
     }
 
-    for (int i = 0; const auto &window: windows)
-    {
-        const auto offset = 100 * i++;
-        window->move(offset, offset);
-        window->show();
-    }
+    ImageWindow window{filePath.filename(), image, cv::WINDOW_AUTOSIZE};
+
+    window.show();
 
     cv::waitKey(0);
 
